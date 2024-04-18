@@ -1,45 +1,50 @@
 # Git Setup
+
 In this lab, you will create your own fork of the https://github.com/bcdevops/devops-platform-workshops-labs repository, add a branch for your work, and create a draft PR for your feature work.
 
 ### Fork the lab repository
-Navigate to the <https://github.com/bcdevops/devops-platform-workshops-labs> repository and click the "fork" button in the upper right corner.  Choose your personal account as the location to fork the repository to.
+
+Navigate to the <https://github.com/bcdevops/devops-platform-workshops-labs> repository and click the "fork" button in the upper right corner. Choose your personal account as the location to fork the repository to.
 
 ![fork the repo](../assets/openshift201/01_git_fork.png)
+
 ## Create the working branch
 
-Create the working branch for this workshop using the __CLI__ or the Github __GUI__
+Create the working branch for this workshop using the **CLI** or the Github **GUI**
 
 ### With the CLI
+
 Clone the repository and create your branch locally
 
-``` bash
-git clone https://github.com/[username]/devops-platform-workshops-labs.git
+```bash
+git clone https://github.com/samwarren/devops-platform-workshops-labs.git
 cd devops-platform-workshops-labs
-git branch [username]-201
-git checkout [username]-201
+git branch samwarren-201
+git checkout samwarren-201
 ```
 
 Push your local branch to the upstream project
 
-``` bash
-git push --set-upstream origin [username]-201
+```bash
+git push --set-upstream origin samwarren-201
 ```
 
 ![cli output](../assets/openshift201/01_git_cli_branch.png)
 
 ### With the GUI
 
-Navigate to the public repository (<https://github.com/[username]/devops-platform-workshops-labs)>
+Navigate to the public repository (<https://github.com/samwarren/devops-platform-workshops-labs)>
 
-- Click "Branch:" and add you [username]-201 as the branch name.
-- Click "Create branch [username]-201"
+- Click "Branch:" and add you samwarren-201 as the branch name.
+- Click "Create branch samwarren-201"
 
-Follow the above instructions to "Create your branch with the CLI" but exclude the `git branch` and `git push` commands to clone a local copy and switch to the already created [username]-201 branch
+Follow the above instructions to "Create your branch with the CLI" but exclude the `git branch` and `git push` commands to clone a local copy and switch to the already created samwarren-201 branch
 
 ### Create a draft pull request
+
 You won't be able to create a pull request until you have committed changes in your branch, so start off by creating a notes.md file and committing it to your branch:
 
-``` bash
+```bash
 echo "# My personal notes message" >> notes.md
 git add notes.md
 git commit -m "add notes location"
@@ -56,7 +61,7 @@ git push
 
 - Update the title and add a message (you can use Markdown, creativity is great!)
 
-**IMPORTANT** Change the base repository to be {admin}/devops-platform-workshops-labs from the default of the parent (forked) repository.  (We don't need to go creating a bunch of PR's against the main repo just now)
+**IMPORTANT** Change the base repository to be {admin}/devops-platform-workshops-labs from the default of the parent (forked) repository. (We don't need to go creating a bunch of PR's against the main repo just now)
 
 ![](../assets/openshift201/01_git_pr_base.png)
 
@@ -78,7 +83,7 @@ We are not ready for a code review just yet, so let's make sure we open a draft 
 
 Click the green "Draft PR" button and you'll soon see your PR details.
 
-Looking to the right, you should see an "Assignees" section.  To quickly assign yourself click on the "assign yourself" link.
+Looking to the right, you should see an "Assignees" section. To quickly assign yourself click on the "assign yourself" link.
 
 Now you have a place to get feedback on your work, and track your changes in an easily accessible location!
 

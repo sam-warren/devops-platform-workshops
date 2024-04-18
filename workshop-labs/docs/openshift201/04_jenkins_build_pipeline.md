@@ -1,8 +1,10 @@
 # Jenkins Build Pipeline
-These labs continue from the previous set, building on the previous effort & learnings. The previous lab focused on deploying items across projects, while this phase focuses on building and image and promoting that image across projects. 
+
+These labs continue from the previous set, building on the previous effort & learnings. The previous lab focused on deploying items across projects, while this phase focuses on building and image and promoting that image across projects.
 
 ## Create a New Pipeline for BlackBox Exporter Build
-In this lab, create a simple pipeline that will build the blackblox exporter app within the tools namespace, and then deploy it in dev, and then in production. 
+
+In this lab, create a simple pipeline that will build the blackblox exporter app within the tools namespace, and then deploy it in dev, and then in production.
 
 - Create the new pipeline under `blackbox_exporter/.pipeline/Jenkinsfile`
 
@@ -28,11 +30,11 @@ node {
                                     blackboxSelector.object()
                                     builds = blackboxSelector.related( "builds" )
                                 } catch (Throwable t) {
-                                    nb = openshift.newBuild( "https://github.com/[username]/devops-platform-workshops-labs.git#[username]-201", "--context-dir=blackbox_exporter", "--name=blackboxexporter" )
-                
+                                    nb = openshift.newBuild( "https://github.com/samwarren/devops-platform-workshops-labs.git#samwarren-201", "--context-dir=blackbox_exporter", "--name=blackboxexporter" )
+
                                     // Print out information about the objects created by newBuild
                                     echo "newBuild created: ${nb.count()} objects : ${nb.names()}"
-                
+
                                     // Filter non-BuildConfig objects and create selector which will find builds related to the BuildConfig
                                     builds = nb.narrow("bc").related( "builds" )
                                 }
@@ -49,7 +51,7 @@ node {
                                     }
 
                                     echo "Waiting for builds to complete..."
-                
+
                                     // Like a watch, but only terminate when at least one selected object meets condition
                                     builds.untilEach {
                                         return it.object().status.phase == "Complete"
@@ -66,7 +68,7 @@ node {
 - Create the buildConfig inside of the `tools` namespace
 
 ```
-oc new-build https://github.com/[username]/devops-platform-workshops-labs.git#[username]-201 --context-dir=blackbox_exporter/.pipeline --name blackbox
+oc new-build https://github.com/samwarren/devops-platform-workshops-labs.git#samwarren-201 --context-dir=blackbox_exporter/.pipeline --name blackbox
 ```
 
 - Either link up the the webhook to this build config as well, or manually start the pipeline as required
@@ -95,11 +97,11 @@ node {
                                     blackboxSelector.object()
                                     builds = blackboxSelector.related( "builds" )
                                 } catch (Throwable t) {
-                                    nb = openshift.newBuild( "https://github.com/[username]/devops-platform-workshops-labs.git#[username]-201", "--context-dir=blackbox_exporter", "--name=blackboxexporter" )
-                
+                                    nb = openshift.newBuild( "https://github.com/samwarren/devops-platform-workshops-labs.git#samwarren-201", "--context-dir=blackbox_exporter", "--name=blackboxexporter" )
+
                                     // Print out information about the objects created by newBuild
                                     echo "newBuild created: ${nb.count()} objects : ${nb.names()}"
-                
+
                                     // Filter non-BuildConfig objects and create selector which will find builds related to the BuildConfig
                                     builds = nb.narrow("bc").related( "builds" )
                                 }
@@ -116,7 +118,7 @@ node {
                                     }
 
                                     echo "Waiting for builds to complete..."
-                
+
                                     // Like a watch, but only terminate when at least one selected object meets condition
                                     builds.untilEach {
                                         return it.object().status.phase == "Complete"
@@ -141,16 +143,14 @@ node {
                                     deploymentconfig = blackboxdcSelector.related( "deploymentconfig" )
                                 } catch (Throwable t) {
                                     na = openshift.newApp("${TOOLS_NAMESPACE}/blackboxexporter:dev", "--name=blackboxexporter").narrow('svc').expose()
-                
+
                                     // Print out information about the objects created by newBuild
                                     // echo "newApp created: ${na.count()} objects : ${na.names()}"
-                
+
                                 }
                 }
             }
             }
 ```
- 
- - Extend the pipeline to deploy to the `prod` namespace as well
 
-
+- Extend the pipeline to deploy to the `prod` namespace as well

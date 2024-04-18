@@ -9,17 +9,20 @@
 After completing this section, you should know how to view application logs in Kibana, navigate the list of fields, and create/save queries.
 
 ## Setup
+
 We will setup a sample application that will produce a log entry every 5 seconds.
 
-### Create a new application 
+### Create a new application
+
 ```bash
- oc -n [-dev] new-app --name logging-app \
+ oc -n d8f105-dev new-app --name logging-app \
  --context-dir=openshift-201/materials/logging \
  https://github.com/BCDevOps/devops-platform-workshops
 
 ```
 
 You should see output similar to the follow:
+
 <pre>
 ...<em>output omitted</em>...
     imagestream.image.openshift.io "logging-app-jmacdonald" created
@@ -30,12 +33,14 @@ You should see output similar to the follow:
 ...<em>output omitted</em>...
 </pre>
 
-
 ### Follow Build
-Use the `oc -n [-dev] logs` command to check the build logs from the `logging-app` build:
+
+Use the `oc -n d8f105-dev logs` command to check the build logs from the `logging-app` build:
+
 ```bash
-oc -n [-dev] logs -f bc/logging-app
+oc -n d8f105-dev logs -f bc/logging-app
 ```
+
 <pre>
 ...<em>output omitted</em>...
 Writing manifest to image destination
@@ -47,6 +52,7 @@ Push successful
 ## Kibana
 
 ### Accessing Kibana
+
 You can access Kibana directly at this [url](https://kibana-openshift-logging.apps.silver.devops.gov.bc.ca/) or it is also accessible from the OpenShift console.
 
 Note: If you receive an unauthorized error (e.g. `{"statusCode":401,"error":"Unauthorized","message":"Authentication Exception"}`), follow steps here to fix: https://stackoverflow.developer.gov.bc.ca/a/119/16
@@ -60,10 +66,11 @@ Navigate to the Logs tab and click the `Show in Kibana` link
 <kbd>![pod-logs-2](images/logging/pod-logs-02.png)</kbd>
 
 ### First time Setup
-If this is your first time logging in to Kibana you may see a screen to setup a search index.  See the steps in the Logging and Visualizations 101 lab [here](https://github.com/BCDevOps/devops-platform-workshops/blob/master/101-lab/content/12_logging_and_visualizations.md#logging-and-visualizations).
 
+If this is your first time logging in to Kibana you may see a screen to setup a search index. See the steps in the Logging and Visualizations 101 lab [here](https://github.com/BCDevOps/devops-platform-workshops/blob/master/101-lab/content/12_logging_and_visualizations.md#logging-and-visualizations).
 
 ### View Logs
+
 To view logs click on the `Discover` tab on the left navigation pane.
 
 <kbd>![kibana-discover](images/logging/kibana-discover.png)</kbd>
@@ -81,9 +88,10 @@ By default you will see something like this:
 7. Time frame chosen for the logs shown (default is last 15 minutes)
 
 ### Fields
+
 Let's select 2 fields for viewing from the `Available fields` panel on the left.
 
-1. `kubernetes.container_name` - this is the name of the container running in kubernetes.  This should be `logging-app`
+1. `kubernetes.container_name` - this is the name of the container running in kubernetes. This should be `logging-app`
 2. `message` - is the message from our application
 
 Your screen should look similar to following:
@@ -92,11 +100,13 @@ Your screen should look similar to following:
 
 ### Queries
 
-Let's say we are only interested in the messages with the number 10 in them.  Change the search terms to be the following:
+Let's say we are only interested in the messages with the number 10 in them. Change the search terms to be the following:
+
 ```
 kubernetes.container_name:"logging-app" AND message:10
 ```
-__NOTE__ if you aren't seeing results it may have been more than 15 minutes since the entry with the number 10 was logged.  If so, change the timeframe in the upper right corner to `Last 30 minutes` or higher if needed.
+
+**NOTE** if you aren't seeing results it may have been more than 15 minutes since the entry with the number 10 was logged. If so, change the timeframe in the upper right corner to `Last 30 minutes` or higher if needed.
 
 <kbd>![kibana-search-10](images/logging/kibana-search-10.png)</kbd>
 
@@ -107,7 +117,8 @@ If you want to save your query (including the selected fields) click the save bu
 <kbd>![kibana-save-search](images/logging/kibana-save-search.png)</kbd>
 
 ### Filters
-If you plan on doing a Google type search you can use a query.  If you are selecting a possible value from a drop down like the `kubernetes.container_name` it can be faster to use a filter.
+
+If you plan on doing a Google type search you can use a query. If you are selecting a possible value from a drop down like the `kubernetes.container_name` it can be faster to use a filter.
 
 Clear out the text in your search bar and then click the `Add a filter +` button just below the search bar:
 
@@ -117,20 +128,24 @@ Choose the `kubernetes.container_name` for the field, `is` as the operator and `
 
 <kbd>![kibana-filter](images/logging/kibana-filter.png)</kbd>
 
-You should now only see your entries in the list similar to the query we performed above.  You can also save this filter by clicking the save button at the top just like we did with the query.
+You should now only see your entries in the list similar to the query we performed above. You can also save this filter by clicking the save button at the top just like we did with the query.
 
 ## Conclusion
-There are many fields available to choose from.  Feel free to experiment with adding other fields to your results.  For example you could add the `kubernetes.container_image` to your list if you are interested in looking at which version of the app the logs are from.
 
-The queries we did in this lab are pretty simple.  Take a look at the [Kibana Query Language](https://www.elastic.co/guide/en/kibana/current/kuery-query.html) for more information on how to write complex queries.
+There are many fields available to choose from. Feel free to experiment with adding other fields to your results. For example you could add the `kubernetes.container_image` to your list if you are interested in looking at which version of the app the logs are from.
+
+The queries we did in this lab are pretty simple. Take a look at the [Kibana Query Language](https://www.elastic.co/guide/en/kibana/current/kuery-query.html) for more information on how to write complex queries.
 
 ### Clean up
+
 To clean up the lab environment run the following command to delete all of the resources we created:
+
 ```bash
-oc -n [-dev] delete all -l app=logging-app
+oc -n d8f105-dev delete all -l app=logging-app
 
 deployment.apps "logging-app" deleted
 buildconfig.build.openshift.io "logging-app" deleted
 imagestream.image.openshift.io "logging-app" deleted
 ```
+
 Next topic - [Best Practices of Image Management](https://github.com/BCDevOps/devops-platform-workshops/blob/master/openshift-201/image-management.md)

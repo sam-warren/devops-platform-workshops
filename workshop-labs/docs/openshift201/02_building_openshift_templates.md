@@ -1,27 +1,27 @@
 # Building OpenShift Templates
+
 Up to this point you should have 2 apps running inside of your dev namespace, each deployed using the helm client `template` feature.
-In this lab, deploy additional components with the traditional OpenShift tools and then create the appropriate templates and store them in your `tools` project. 
-
-
+In this lab, deploy additional components with the traditional OpenShift tools and then create the appropriate templates and store them in your `tools` project.
 
 ## Deploy Grafana Using OpenShift Tools
+
 - Deploy Grafana into the dev namespace using `new-app` and the existing Grafana docker image
 
 ```
-oc new-app grafana/grafana:6.2.0 --name [username]-grafana
+oc new-app grafana/grafana:6.2.0 --name samwarren-grafana
 ```
 
-- Explore the output of the `new-app` command 
+- Explore the output of the `new-app` command
 - Explore the objects generated from the utility
 
 ```
-oc get all -l app=[username]-grafana
+oc get all -l app=samwarren-grafana
 ```
 
 - Expose the Grafana service
 
 ```
-oc expose service [username]-grafana --name [username]-grafana
+oc expose service samwarren-grafana --name samwarren-grafana
 ```
 
 - Login to the interface with the default admin password (admin/admin)
@@ -43,27 +43,26 @@ oc expose service [username]-grafana --name [username]-grafana
 
 ![](../assets/openshift201/02_grafana_dashboard_04.png)
 
-
 - Export the dashbaord configuration for later use
 
 ![](../assets/openshift201/02_grafana_dashboard_05.png)
 
-
-- Rollout a new version from the commandline 
+- Rollout a new version from the commandline
 
 ```
-oc rollout latest [[username]]-grafana
+oc rollout latest [samwarren]-grafana
 ```
 
 - Explore the UI again, noticing all configuration changes removed
-    - The ephemeral state of this pod loses all configuration changes on redeploy
-    - Ideally you don't want to use persistent storage for configuration data
+  - The ephemeral state of this pod loses all configuration changes on redeploy
+  - Ideally you don't want to use persistent storage for configuration data
 
 ## Configure Grafana Without State (aka. configMaps)
-This section focuses on using a configMaps to define the configuration of Grafana. Once complete, Grafana instances can scale past 1 pod and will be deemed "stateless". 
+
+This section focuses on using a configMaps to define the configuration of Grafana. Once complete, Grafana instances can scale past 1 pod and will be deemed "stateless".
 
 - Add a configMap to the grafana app for configuring the dashboard provider
-![](../assets/openshift201/02_grafana_configmap_01.png)
+  ![](../assets/openshift201/02_grafana_configmap_01.png)
 
 ![](../assets/openshift201/02_grafana_configmap_02.png)
 
@@ -90,7 +89,7 @@ providers:
   # <bool> enable dashboard editing
   editable: true
   # <int> how often Grafana will scan for changed dashboards
-  updateIntervalSeconds: 10  
+  updateIntervalSeconds: 10
   options:
     # <string, required> path to dashboard files on disk. Required
     path: /var/lib/grafana/dashboards
@@ -104,40 +103,44 @@ providers:
 ![](../assets/openshift201/02_grafana_configmap_05.png)
 
 - Add a label to the configMap to easily associate this with the app
-![](../assets/openshift201/02_grafana_configmap_06.png)
+  ![](../assets/openshift201/02_grafana_configmap_06.png)
 
 - Repeat the previous tasks for the **datasources** and **dashboards** configMaps
-    - **datasources** mount path: `/etc/grafana/provisioning/datasources/`
-    - **datasources** key: `datasources.yml`
-    - **datasources content**: 
-        ```
-        # config file version
-        apiVersion: 1
 
-        datasources:
-        - name: Prometheus
-          type: prometheus
-          access: proxy
-          orgId: 1
-          url: http://prometheus:80  
-          isDefault: true
-          version: 1
-          editable: true
-        - name: Loki
-          type: loki
-          orgId: 1
-          access: proxy
-          url: http://loki:3100  
-          jsonData:
-              maxLines: 1000
-        ```
-    - **dashboards** mount path: `/var/lib/grafana/dashboards/`
-    - **dashboard** key: `simple_dashboard.json`
-    - **dashboard content**: json content from the dashboard export 
+  - **datasources** mount path: `/etc/grafana/provisioning/datasources/`
+  - **datasources** key: `datasources.yml`
+  - **datasources content**:
+
+    ```
+    # config file version
+    apiVersion: 1
+
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      orgId: 1
+      url: http://prometheus:80
+      isDefault: true
+      version: 1
+      editable: true
+    - name: Loki
+      type: loki
+      orgId: 1
+      access: proxy
+      url: http://loki:3100
+      jsonData:
+          maxLines: 1000
+    ```
+
+  - **dashboards** mount path: `/var/lib/grafana/dashboards/`
+  - **dashboard** key: `simple_dashboard.json`
+  - **dashboard content**: json content from the dashboard export
 
 **Note** Remember to add the appropriate labels to all configMaps
-- When complete, the grafana deployment config should have 3 configmaps similar to the following: 
-![](../assets/openshift201/02_grafana_configmap_07.png)
+
+- When complete, the grafana deployment config should have 3 configmaps similar to the following:
+  ![](../assets/openshift201/02_grafana_configmap_07.png)
 
 - Redeploy the grafana pod, log in with default admin credentials, and validate that the dashboard and datasources are present
 
@@ -145,34 +148,32 @@ providers:
 ![](../assets/openshift201/02_grafana_cm_validate_02.png)
 ![](../assets/openshift201/02_grafana_cm_validate_03.png)
 
-
-
-
 ## Create an OpenShift Deployment Artifact for Grafana
-While the `new-app` command was quick and helpful to get an app deployed, it doesn't help in the management of the associated application components. In this section, create an OpenShift artifact (similar to the Helm lab), which can be used for easier management of the components. 
+
+While the `new-app` command was quick and helpful to get an app deployed, it doesn't help in the management of the associated application components. In this section, create an OpenShift artifact (similar to the Helm lab), which can be used for easier management of the components.
 
 - Review all artifacts associated with Grafana
 
 ```
-oc get all -l app=[username]-grafana
+oc get all -l app=samwarren-grafana
 ```
 
 - Expand the search to additional resources
 
 ```
-oc get all,configmap -l app=[username]-grafana
+oc get all,configmap -l app=samwarren-grafana
 ```
 
 - Export the components into a yaml file that works with `oc apply`
 
 ```
-oc get all,configmap -l app=[username]-grafana --export -o yaml > grafana_template.yaml
+oc get all,configmap -l app=samwarren-grafana --export -o yaml > grafana_template.yaml
 ```
 
 - Verify that the file works by removing all objects and deploying from the manifest
 
 ```
-oc delete all,configmap -l app=[username]-grafana
+oc delete all,configmap -l app=samwarren-grafana
 ```
 
 - Attempt to reapply the object list
@@ -180,6 +181,7 @@ oc delete all,configmap -l app=[username]-grafana
 ```
 oc apply -f grafana_template.yaml
 ```
+
 - Identify the types of objects that shouldn't belong in the template
 - Remove the undesired objects from the template and reapply
 
@@ -189,30 +191,32 @@ oc apply -f grafana_template.yaml
 
 - Continue to reapply the same file and review the output; it's clear there is still too much "specific" detail in the manfest
 - Edit the manifest to make it more "generic"
-    - Remove any references to: 
-        - last applied configuration annotations (just to keep the file clean)
-        - creationTimestamp
-        - generation
-        - clusterIP
-        - namespace
-        - resourceVersion
-        - selflink
-        - uid 
-        - status
 
-- Remove the objects again and apply the manifest more than once  (this should succeeed with `unchanged` showing up when no changes are made)
+  - Remove any references to:
+    - last applied configuration annotations (just to keep the file clean)
+    - creationTimestamp
+    - generation
+    - clusterIP
+    - namespace
+    - resourceVersion
+    - selflink
+    - uid
+    - status
+
+- Remove the objects again and apply the manifest more than once (this should succeeed with `unchanged` showing up when no changes are made)
 
 ```
-oc delete all,configmap -l app=[username]-grafana
+oc delete all,configmap -l app=samwarren-grafana
 oc apply -f grafana_template.yaml
 oc apply -f grafana_template.yaml
 ```
 
 ## Create a Template for Grafana
-With the above content added to a manifest with all items in a list, it can be parameterized into a template object. 
-Using an existing template for reference (such as the one explored in previous labs), build a template for Grafana. 
 
-The following code can be used as an example: 
+With the above content added to a manifest with all items in a list, it can be parameterized into a template object.
+Using an existing template for reference (such as the one explored in previous labs), build a template for Grafana.
+
+The following code can be used as an example:
 
 ```
 apiVersion: template.openshift.io/v1
@@ -225,9 +229,9 @@ message: |-
 metadata:
   annotations:
     description: |-
-      Grafana Template for use in OpenShift 201 lab without persistent storage. 
+      Grafana Template for use in OpenShift 201 lab without persistent storage.
 
-      WARNING: Any configuration stored will be lost upon pod destruction. ConfigMaps should be used for codified configuration. 
+      WARNING: Any configuration stored will be lost upon pod destruction. ConfigMaps should be used for codified configuration.
     iconClass: icon-other-unknown
     openshift.io/display-name: grafana-openshift201
     openshift.io/documentation-url: https://github.com/bcdevops/devops-platform-workshops
@@ -236,7 +240,7 @@ metadata:
     openshift.io/support-url: https://github.com/bcdevops/
     tags: monitoring,grafana
   name: grafana-template
-objects: 
+objects:
 - apiVersion: v1
   kind: Service
   metadata:
@@ -586,6 +590,7 @@ parameters:
   required: true
   value: pathfinder.gov.bc.ca
 ```
+
 - Install the template in the `dev` namespace
 
 ```
@@ -605,7 +610,8 @@ oc process grafana-template \
 ```
 
 ## Create a Template for Prometheus and Loki
-Using the experience gained above, create 2 additional templates for Prometheus and Loki. This should not require any GUI/UI driven changes since the you already have the configuration artifacts from the `Helm` lab. 
+
+Using the experience gained above, create 2 additional templates for Prometheus and Loki. This should not require any GUI/UI driven changes since the you already have the configuration artifacts from the `Helm` lab.
 
 - Test each template in the dev namespace by passing a separate name for the service and ensuring the resources come up properly
 
@@ -614,6 +620,5 @@ oc process -f openshift_template_prometheus.yaml -p PROMETHEUS_SERVICE_NAME=prom
 ```
 
 ## Commiting The Templates to SCM
-Copy all template files into a `templates` directory in your forked repo and commit the changes to your branch. 
 
-
+Copy all template files into a `templates` directory in your forked repo and commit the changes to your branch.

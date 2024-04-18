@@ -10,8 +10,8 @@ mkdir -p /opt/app-root/book/student
 ln -s /opt/app-root/book "/opt/app-root/book/student/${STUDENT}"
 { set +x; } 2>/dev/null
 
-find "/opt/app-root/book/openshift101" -type f -name '*.html' | xargs -I {} perl -p -i -e "s/\Q[username]\E/${STUDENT}/g" '{}'
-find "/opt/app-root/book/openshift101" -type f -name '*.html' | xargs -I {} perl -p -i -e "s/\Q[-tools]\E/${NAMESPACE_TOOLS}/g" '{}'
-find "/opt/app-root/book/openshift101" -type f -name '*.html' | xargs -I {} perl -p -i -e "s/\Q[-dev]\E/${NAMESPACE_DEV}/g" '{}'
+find "/opt/app-root/book/openshift101" -type f -name '*.html' | xargs -I {} perl -p -i -e "s/\Qsamwarren\E/${STUDENT}/g" '{}'
+find "/opt/app-root/book/openshift101" -type f -name '*.html' | xargs -I {} perl -p -i -e "s/\Qd8f105-tools\E/${NAMESPACE_TOOLS}/g" '{}'
+find "/opt/app-root/book/openshift101" -type f -name '*.html' | xargs -I {} perl -p -i -e "s/\Qd8f105-dev\E/${NAMESPACE_DEV}/g" '{}'
 
 exec "$@"

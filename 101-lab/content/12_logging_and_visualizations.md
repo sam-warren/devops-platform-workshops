@@ -1,19 +1,21 @@
 # Logging and Visualizations
 
 ### EFK for Aggregated Logs
-The OpenShift platform provides an aggregated logging stack that is automatically configured to centralize and store logs from application pods. These logs are only retained for a short period of time, currently about 14 days, but can be used to help identify issues with application pods. 
 
-Kibana is the primary interface for viewing and querying logs. 
+The OpenShift platform provides an aggregated logging stack that is automatically configured to centralize and store logs from application pods. These logs are only retained for a short period of time, currently about 14 days, but can be used to help identify issues with application pods.
+
+Kibana is the primary interface for viewing and querying logs.
 
 #### Access the archive link from a pod
+
 The shortcut towards accessing the Kibana is from the `Logs` tab of a running pod. Kibana can also be accessed directly at its [url](https://kibana-openshift-logging.apps.silver.devops.gov.bc.ca/).
 
-
-- Select the running `rocketchat-[username]` pod and select the Logs tab
+- Select the running `rocketchat-samwarren` pod and select the Logs tab
 
 <kbd>![](./images/10_logging_01.png)</kbd>
 
 - Click on the "Show in Kibana" link to go to Kibana
+
   - Kibana login is setup with SSO, you will see the same login page as of OpenShift console
   - Kibana inherits the same RBAC as OpenShift, you will only have access to the same namespace/project set as from OpenShift cluster
 
@@ -24,7 +26,6 @@ The shortcut towards accessing the Kibana is from the `Logs` tab of a running po
 <kbd>![](./images/10_logging_setup_01.png)</kbd>
 
 <kbd>![](./images/10_logging_setup_02.png)</kbd>
-
 
 - Review the logging interface and the query that has been automatically populated (there are more examples to explore at the end of this section)
 
@@ -42,9 +43,9 @@ The shortcut towards accessing the Kibana is from the `Logs` tab of a running po
 
 <kbd>![](./images/10_logging_viz_01.png)</kbd>
 
-
 #### Some useful queries you can try on:
-- Get logs for the whole namespace: 
+
+- Get logs for the whole namespace:
   ```sql
     kubernetes.namespace_name:"<namespace_name>"
   ```
